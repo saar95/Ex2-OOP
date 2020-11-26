@@ -1,2 +1,2 @@
-# Ex2-OOP
+# Ex2
 The second assignment in OPP course
