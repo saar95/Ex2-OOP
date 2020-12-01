@@ -10,7 +10,7 @@ public class NodeData implements node_data{
         this.key=count;
         this.weight=0;
         this.info="";
-        this.tag=0;
+        this.tag=Integer.MAX_VALUE;
         count++;
     }
     @Override
