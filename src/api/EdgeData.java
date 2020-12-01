@@ -1,3 +1,5 @@
+package api;
+
 public class EdgeData implements edge_data {
     private node_data src;
     private node_data dest;

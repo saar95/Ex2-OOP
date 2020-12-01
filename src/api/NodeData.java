@@ -1,3 +1,5 @@
+package api;
+
 public class NodeData implements node_data{
     private int key;
     private double weight;
