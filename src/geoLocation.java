@@ -1,21 +1,22 @@
 public class geoLocation implements geo_location {
+    private double x,y,z;
     @Override
     public double x() {
-        return 0;
+        return this.x;
     }
 
     @Override
     public double y() {
-        return 0;
+        return this.y;
     }
 
     @Override
     public double z() {
-        return 0;
+        return this.z;
     }
 
     @Override
     public double distance(geo_location g) {
-        return 0;
+        return Math.sqrt((Math.pow(this.x-g.x(),2)+Math.pow(this.y-g.y(),2)+Math.pow(this.z-g.z(),2)));
     }
 }

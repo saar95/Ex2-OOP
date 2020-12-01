@@ -27,26 +27,26 @@ public class NodeData implements node_data{
 
     @Override
     public void setWeight(double w) {
-
+    this.weight=w;
     }
 
     @Override
     public String getInfo() {
-        return null;
+        return this.info;
     }
 
     @Override
     public void setInfo(String s) {
-
+    this.info=s;
     }
 
     @Override
     public int getTag() {
-        return 0;
+        return this.tag;
     }
 
     @Override
     public void setTag(int t) {
-
+    this.tag=t;
     }
 }
