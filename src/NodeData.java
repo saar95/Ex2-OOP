@@ -1,24 +1,28 @@
 public class NodeData implements node_data{
     private int key;
+    private double weight;
+    private String info;
+    private int tag;
+    private geo_location geo;
 
     @Override
     public int getKey() {
-        return 0;
+        return this.key;
     }
 
     @Override
     public geo_location getLocation() {
-        return null;
+        return this.geo;
     }
 
     @Override
     public void setLocation(geo_location p) {
-
+    this.geo=p;
     }
 
     @Override
     public double getWeight() {
-        return 0;
+        return this.weight;
     }
 
     @Override
