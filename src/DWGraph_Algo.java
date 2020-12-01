@@ -86,7 +86,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
                 node_info n=reset.next();
                 n.setTag(Double.MAX_VALUE);
             }
-            return true;
+            return true;f
         }
 
 
