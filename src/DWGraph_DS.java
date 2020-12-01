@@ -8,6 +8,13 @@ public class DWGraph_DS implements directed_weighted_graph {
     private int edgeCount;
     private int modeCount;
 
+    public DWGraph_DS(){
+        this.map=new HashMap<Integer, HashMap<Integer,edge_data>>() ;
+        this.nodes=new HashMap<Integer, node_data>();
+        this.edgeCount=0;
+        this.modeCount=0;
+    }
+
     @Override
     public node_data getNode(int key) {
         return nodes.get(key);

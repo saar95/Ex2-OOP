@@ -4,7 +4,15 @@ public class NodeData implements node_data{
     private String info;
     private int tag;
     private geo_location geo;
+    private static int count;
 
+    public NodeData(){
+        this.key=count;
+        this.weight=0;
+        this.info="";
+        this.tag=0;
+        count++;
+    }
     @Override
     public int getKey() {
         return this.key;
