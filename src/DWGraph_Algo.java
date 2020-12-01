@@ -1,5 +1,7 @@
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class DWGraph_Algo implements dw_graph_algorithms{
     private directed_weighted_graph dwga;
@@ -40,8 +42,53 @@ public class DWGraph_Algo implements dw_graph_algorithms{
 
     @Override
     public boolean isConnected() {
-        return false;
-    }
+
+            if (this.gr.nodeSize()<=1)
+                return true;
+            Queue<node_info> q = new LinkedList<node_info>();
+            Iterator<node_info> it = this.gr.getV().iterator();
+            node_info temp = it.next();
+            q.add(temp);
+            temp.setTag(0);
+            while (q.isEmpty()==false)
+            {
+                node_info peek=q.peek();
+                Iterator<node_info> neighbors = this.gr.getV(peek.getKey()).iterator();
+                while (neighbors.hasNext())
+                {
+                    node_info neigh = neighbors.next();
+                    if (neigh.getTag() == Double.MAX_VALUE)
+                    {
+                        q.add(neigh);
+                        neigh.setTag(0);
+                    }
+                }
+                q.poll();
+            }
+            Iterator<node_info> newIt = this.gr.getV().iterator();
+            while (newIt.hasNext()) {
+                temp = newIt.next();
+                if (temp.getTag() == Double.MAX_VALUE)
+                {
+                    Iterator<node_info> reset = this.gr.getV().iterator();
+                    while(reset.hasNext())
+                    {
+                        node_info n=reset.next();
+                        n.setTag(Double.MAX_VALUE);
+                    }
+                    return false;
+                }
+            }
+
+            Iterator<node_info> reset = this.gr.getV().iterator();
+            while(reset.hasNext())
+            {
+                node_info n=reset.next();
+                n.setTag(Double.MAX_VALUE);
+            }
+            return true;
+        }
+
 
     @Override
     public double shortestPathDist(int src, int dest) {
