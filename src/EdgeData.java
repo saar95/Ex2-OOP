@@ -5,6 +5,13 @@ public class EdgeData implements edge_data {
     private int tag;
     private String info;
 
+
+    public EdgeData(node_data src,node_data dest,double weight){
+    this.src=src;
+    this.dest=dest;
+    this.weight=weight;
+
+    }
     @Override
     public int getSrc() {
         return this.src.getKey();
