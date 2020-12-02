@@ -1,9 +1,6 @@
 package api;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 public class DWGraph_Algo implements dw_graph_algorithms{
     private directed_weighted_graph dwga;
@@ -103,12 +100,99 @@ public class DWGraph_Algo implements dw_graph_algorithms{
 
     @Override
     public double shortestPathDist(int src, int dest) {
-        return 0;
+        node_data temp = null;
+        double tempWeight=0;
+        if(src==dest)
+            return 0;
+        PriorityQueue<node_data> q = new PriorityQueue<node_data>();
+        q.add(this.dwga.getNode(src));
+        dwga.getNode(src).setWeight(0);
+        while (!q.isEmpty()) {
+            temp = q.peek();
+            if (temp.getInfo() == "") {
+                temp.setInfo("1");
+                if (temp.getKey() == dest) break;
+                Iterator<edge_data> it = dwga.getE(temp.getKey()).iterator();
+                while (it.hasNext()) {
+                    node_data n = dwga.getNode(it.next().getDest());
+                    if (n.getInfo() == "") {
+                        tempWeight = dwga.getEdge(temp.getKey(), n.getKey()).getWeight();
+                        if (tempWeight != -1 && tempWeight + temp.getWeight() < n.getWeight()) {
+                            n.setWeight(tempWeight + temp.getWeight());
+                            if (!q.contains(n)) q.add(n);
+                        }
+                    }
+                }
+            }
+            q.poll();
+        }
+        double weight=dwga.getNode(dest).getWeight();
+        if(weight!=Double.MAX_VALUE) {
+            resInfo(dwga);
+            return weight;
+        }
+        resInfo(dwga);
+        return -1;
     }
 
     @Override
     public List<node_data> shortestPath(int src, int dest) {
-        return null;
+        List<node_data> l = new ArrayList<node_data>();
+        node_data temp = null;
+        double tempWeight=0;
+        if(src==dest)
+            return null;
+        PriorityQueue<node_data> q = new PriorityQueue<node_data>();
+        q.add(this.dwga.getNode(src));
+        dwga.getNode(src).setWeight(0);
+        while (!q.isEmpty()) {
+            temp = q.peek();
+            if (temp.getInfo() == "") {
+                temp.setInfo("1");
+                if (temp.getKey() == dest) break;
+                Iterator<edge_data> it = dwga.getE(temp.getKey()).iterator();
+                while (it.hasNext()) {
+                    node_data n = dwga.getNode(it.next().getDest());
+                    if (n.getInfo() == "") {
+                        tempWeight = dwga.getEdge(temp.getKey(), n.getKey()).getWeight();
+                        if (tempWeight != -1 && tempWeight + temp.getWeight() < n.getWeight()) {
+                            n.setWeight(tempWeight + temp.getWeight());
+                            if (!q.contains(n)) q.add(n);
+                        }
+                    }
+                }
+            }
+            q.poll();
+        }
+        if(dwga.getNode(dest).getWeight()==Double.MAX_VALUE)
+            return null;
+        l.add(dwga.getNode(dest));
+        this.dwga=redirect(dwga);
+        listMakerSrc(dwga.getNode(dest),l);
+        this.dwga=redirect(dwga);
+        Iterator<node_data> srcIt=l.listIterator();
+            Stack<node_data> s = new Stack<node_data>();
+            for (int i = 0; i < l.size(); ) {
+                s.push(l.remove(i));
+            }
+            while (!s.isEmpty())
+                l.add(s.pop());
+            resInfo(dwga);
+            return l;
+        }
+
+    private void listMakerSrc(node_data src ,List<node_data> l) {
+        node_data temp=null;
+        Iterator <edge_data> ni = dwga.getE(src.getKey()).iterator();
+        while(ni.hasNext()){
+            temp = dwga.getNode(ni.next().getDest());
+            if(dwga.getEdge(src.getKey(), temp.getKey())!=null) {
+                if(src.getWeight()==dwga.getEdge(src.getKey(), temp.getKey()).getWeight()+temp.getWeight()) {
+                    l.add(temp);
+                    listMakerSrc(temp, l);
+                }
+            }
+        }
     }
 
     @Override
@@ -128,6 +212,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
             temp=it.next();
             temp.setTag(Integer.MAX_VALUE);
             temp.setInfo("");
+            temp.setWeight(Double.MAX_VALUE);
         }
     }
 
@@ -170,13 +255,16 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         g.connect(a.getKey(),b.getKey(),2);
         g.connect(a.getKey(),c.getKey(),4);
         g.connect(b.getKey(),d.getKey(),6);
-        g.connect(c.getKey(),b.getKey(),6);
-        g.connect(d.getKey(),b.getKey(),6);
-        g.connect(d.getKey(),a.getKey(),6);
+        g.connect(c.getKey(),b.getKey(),1);
+        g.connect(d.getKey(),b.getKey(),9);
+        //g.connect(d.getKey(),a.getKey(),12);
+        //g.connect(b.getKey(),a.getKey(),1);
         dw_graph_algorithms wga=new DWGraph_Algo();
         wga.init(g);
         directed_weighted_graph copy=new DWGraph_DS();
         System.out.println(wga.isConnected());
+        System.out.println(wga.shortestPathDist(d.getKey(),a.getKey()));
+        List l = wga.shortestPath(c.getKey(),a.getKey());
         System.out.println("a");
 
 
