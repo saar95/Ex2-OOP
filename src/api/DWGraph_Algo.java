@@ -1,5 +1,11 @@
 package api;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.*;
 
 public class DWGraph_Algo implements dw_graph_algorithms{
@@ -197,11 +203,25 @@ public class DWGraph_Algo implements dw_graph_algorithms{
 
     @Override
     public boolean save(String file) {
-        return false;
+        //serialize
+        Gson gson=new GsonBuilder().create();
+        String json=gson.toJson(this.dwga);
+
+        try{
+            PrintWriter pw=new PrintWriter(new File(file));
+            pw.write(json);
+            pw.close();
+        }
+        catch (FileNotFoundException e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     @Override
     public boolean load(String file) {
+        //deserialize
         return false;
     }
 
@@ -265,7 +285,8 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         System.out.println(wga.isConnected());
         System.out.println(wga.shortestPathDist(d.getKey(),a.getKey()));
         List l = wga.shortestPath(c.getKey(),a.getKey());
-        System.out.println("a");
+        System.out.println(wga.save("wga.json"));
+
 
 
 

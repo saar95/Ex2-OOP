@@ -1,8 +1,10 @@
 package api;
 
+import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;
 
 public class NodeData implements node_data,Comparable<node_data>{
+    @SerializedName("id")
     private int key;
     private double weight;
     private String info;
