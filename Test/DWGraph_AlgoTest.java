@@ -4,6 +4,7 @@ class DWGraph_AlgoTest {
 
     @org.junit.jupiter.api.Test
     void init() {
+        int a =0;
     }
 
     @org.junit.jupiter.api.Test
