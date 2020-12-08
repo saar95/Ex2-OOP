@@ -1,6 +1,9 @@
 package api;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -204,7 +207,49 @@ public class DWGraph_Algo implements dw_graph_algorithms{
     public boolean save(String file) {
         //serialize
         Gson gson=new GsonBuilder().setPrettyPrinting().create();
-        String json=gson.toJson(this.dwga);
+        JsonObject edgesObject=new JsonObject();
+        JsonObject nodesObject=new JsonObject();
+        JsonArray edgesArray=new JsonArray();
+        JsonArray nodesArray=new JsonArray();
+
+        Iterator <node_data> it1 = this.dwga.getV().iterator();
+        while (it1.hasNext()){
+            node_data tempNode=it1.next();
+            geo_location geo=tempNode.getLocation();
+            double x=geo.x();
+            double y=geo.y();
+            double z=geo.z();
+            nodesObject.addProperty("pos","tempNode.getLocation()");
+            nodesObject.addProperty("id",tempNode.getKey());
+            Iterator <edge_data> it2 = this.dwga.getE(tempNode.getKey()).iterator();
+            while (it2.hasNext()){
+                edge_data tempEdge=it2.next();
+                //edgesObject.addProperty("dest",tempEdge.getDest());
+                edgesObject.addProperty("src",tempEdge.getSrc());
+                nodesArray.add(nodesObject);
+                String location=(String)( x,y,z);
+                edgesObject.addProperty("w",tempEdge.getWeight());
+                edgesObject.addProperty("dest",tempEdge.getDest());
+                edgesArray.add(edgesObject);
+            }
+        }
+
+
+//        for (){
+//            a.addProperty("src",);
+//            a.addProperty("w",);
+//            a.addProperty("dest",);
+//            edges.add(a);
+//            for (){
+//                b.addProperty("pos",);
+//                b.addProperty("id",);
+//                nodes.add(b);
+//            }
+//        }
+        JsonObject graphObject=new JsonObject();
+        graphObject.add("Edges",edgesArray);
+        graphObject.add("Nodes",nodesArray);
+        String json=gson.toJson(graphObject);
 
         try{
             PrintWriter pw=new PrintWriter(new File(file));
@@ -222,12 +267,12 @@ public class DWGraph_Algo implements dw_graph_algorithms{
     public boolean load(String file) {
         //deserialize
 //        try {
-//            GsonBuilder builder=new GsonBuilder().create();
+//            GsonBuilder builder=new GsonBuilder();
 //            builder.registerTypeAdapter(DWGraph_DS.class,new DWGraphJsonDeserializer());
 //            Gson gson=builder.create();
 //
 //            FileReader reader=new FileReader(file);
-//            DWGraph_DS dwg=gson.fromJson(reader,DWGraph_DS.class);
+//            this.dwga=gson.fromJson(reader,DWGraph_DS.class);
 //        }
 //        catch (FileNotFoundException e){
 //            e.printStackTrace();
