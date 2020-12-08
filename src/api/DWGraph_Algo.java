@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.*;
 
@@ -204,7 +205,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
     @Override
     public boolean save(String file) {
         //serialize
-        Gson gson=new GsonBuilder().create();
+        Gson gson=new GsonBuilder().setPrettyPrinting().create();
         String json=gson.toJson(this.dwga);
 
         try{
@@ -222,7 +223,19 @@ public class DWGraph_Algo implements dw_graph_algorithms{
     @Override
     public boolean load(String file) {
         //deserialize
-        return false;
+        try {
+            GsonBuilder builder=new GsonBuilder().create();
+            builder.registerTypeAdapter(DWGraph_DS.class,new DWGraphJsonDeserializer());
+            Gson gson=builder.create();
+
+            FileReader reader=new FileReader(file);
+            DWGraph_DS dwg=gson.fromJson(reader,DWGraph_DS.class);
+        }
+        catch (FileNotFoundException e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     private void resInfo(directed_weighted_graph dwga){
@@ -286,6 +299,9 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         System.out.println(wga.shortestPathDist(d.getKey(),a.getKey()));
         List l = wga.shortestPath(c.getKey(),a.getKey());
         System.out.println(wga.save("wga.json"));
+        directed_weighted_graph load=new DWGraph_DS();
+
+        System.out.println(wga.load("wga.json"));
 
 
 
