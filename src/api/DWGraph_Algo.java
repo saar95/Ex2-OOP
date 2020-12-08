@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.*;
 
@@ -205,13 +204,12 @@ public class DWGraph_Algo implements dw_graph_algorithms{
 
     @Override
     public boolean save(String file) {
-        //serialize
-        Gson gson=new GsonBuilder().setPrettyPrinting().create();
+        Gson gson=new GsonBuilder().create();
         JsonObject edgesObject=new JsonObject();
         JsonObject nodesObject=new JsonObject();
         JsonArray edgesArray=new JsonArray();
         JsonArray nodesArray=new JsonArray();
-
+        //ALMOG ATA HOMO ANAAKKKKK!!!!!!!!!
         Iterator <node_data> it1 = this.dwga.getV().iterator();
         while (it1.hasNext()){
             node_data tempNode=it1.next();
@@ -219,33 +217,21 @@ public class DWGraph_Algo implements dw_graph_algorithms{
             double x=geo.x();
             double y=geo.y();
             double z=geo.z();
-            nodesObject.addProperty("pos","tempNode.getLocation()");
+            String xLocation=String.valueOf(x);
+            String yLocation=String.valueOf(y);
+            String zLocation=String.valueOf(z);
+            nodesObject.addProperty("pos",xLocation+","+yLocation+","+zLocation);
             nodesObject.addProperty("id",tempNode.getKey());
             Iterator <edge_data> it2 = this.dwga.getE(tempNode.getKey()).iterator();
             while (it2.hasNext()){
                 edge_data tempEdge=it2.next();
-                //edgesObject.addProperty("dest",tempEdge.getDest());
                 edgesObject.addProperty("src",tempEdge.getSrc());
                 nodesArray.add(nodesObject);
-                String location=(String)( x,y,z);
                 edgesObject.addProperty("w",tempEdge.getWeight());
                 edgesObject.addProperty("dest",tempEdge.getDest());
                 edgesArray.add(edgesObject);
             }
         }
-
-
-//        for (){
-//            a.addProperty("src",);
-//            a.addProperty("w",);
-//            a.addProperty("dest",);
-//            edges.add(a);
-//            for (){
-//                b.addProperty("pos",);
-//                b.addProperty("id",);
-//                nodes.add(b);
-//            }
-//        }
         JsonObject graphObject=new JsonObject();
         graphObject.add("Edges",edgesArray);
         graphObject.add("Nodes",nodesArray);
