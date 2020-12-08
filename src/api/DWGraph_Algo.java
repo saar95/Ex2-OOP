@@ -221,18 +221,18 @@ public class DWGraph_Algo implements dw_graph_algorithms{
     @Override
     public boolean load(String file) {
         //deserialize
-        try {
-            GsonBuilder builder=new GsonBuilder().create();
-            builder.registerTypeAdapter(DWGraph_DS.class,new DWGraphJsonDeserializer());
-            Gson gson=builder.create();
-
-            FileReader reader=new FileReader(file);
-            DWGraph_DS dwg=gson.fromJson(reader,DWGraph_DS.class);
-        }
-        catch (FileNotFoundException e){
-            e.printStackTrace();
-            return false;
-        }
+//        try {
+//            GsonBuilder builder=new GsonBuilder().create();
+//            builder.registerTypeAdapter(DWGraph_DS.class,new DWGraphJsonDeserializer());
+//            Gson gson=builder.create();
+//
+//            FileReader reader=new FileReader(file);
+//            DWGraph_DS dwg=gson.fromJson(reader,DWGraph_DS.class);
+//        }
+//        catch (FileNotFoundException e){
+//            e.printStackTrace();
+//            return false;
+//        }
         return true;
     }
 

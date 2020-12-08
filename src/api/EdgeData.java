@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 public class EdgeData implements edge_data {
     private node_data src;
     private node_data dest;
-    @SerializedName("W")
+    @SerializedName("w")
     private double weight;
     private int tag;
     private String info;
@@ -15,6 +15,8 @@ public class EdgeData implements edge_data {
     this.src=src;
     this.dest=dest;
     this.weight=weight;
+    this.tag=0;
+    this.info="";
 
     }
     @Override

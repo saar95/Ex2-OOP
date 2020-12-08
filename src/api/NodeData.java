@@ -9,6 +9,7 @@ public class NodeData implements node_data,Comparable<node_data>{
     private double weight;
     private String info;
     private int tag;
+    @SerializedName("pos")
     private geo_location geo;
     private static int count;
 
@@ -17,6 +18,7 @@ public class NodeData implements node_data,Comparable<node_data>{
         this.weight=Double.MAX_VALUE;;
         this.info="";
         this.tag=Integer.MAX_VALUE;
+        this.geo=new geoLocation();
         count++;
     }
     @Override

@@ -9,10 +9,25 @@ public class DWGraphJsonDeserializer implements JsonDeserializer<DWGraph_DS> {
     @Override
     public DWGraph_DS deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject jsonObject = json.getAsJsonObject();
-        String edges = jsonObject.get("Edges").getAsString();
         directed_weighted_graph dwg = new DWGraph_DS();
-        for (Map.Entry<>)
+        JsonObject edgesJsonObj = jsonObject.get("map").getAsJsonObject();//need to change map to Edges
+        for (){
 
-    }
+        }
+
+
+
+        JsonObject nodesJsonObj = jsonObject.get("nodes").getAsJsonObject();//need to change nodes to Nodes
+        for (Map.Entry<String, JsonElement> set : nodesJsonObj.entrySet()) {
+            node_data node = new NodeData();
+            String nodesKey = set.getKey();
+            JsonElement jsonValueElement = set.getValue();
+            int nodeId = jsonValueElement.getAsJsonObject().get("id").getAsInt();
+            geo_location geo = node.getLocation();
+            node.setLocation(geo);
+            dwg.addNode(node);
+        }
+
+        return dwg;
 
 }
