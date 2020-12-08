@@ -1,0 +1,51 @@
+{
+  "Edges": [
+    {
+      "src": 3,
+      "w": 9.0,
+      "dest": 1
+    },
+    {
+      "src": 3,
+      "w": 9.0,
+      "dest": 1
+    },
+    {
+      "src": 3,
+      "w": 9.0,
+      "dest": 1
+    },
+    {
+      "src": 3,
+      "w": 9.0,
+      "dest": 1
+    },
+    {
+      "src": 3,
+      "w": 9.0,
+      "dest": 1
+    }
+  ],
+  "Nodes": [
+    {
+      "pos": "tempNode.getLocation()",
+      "id": 3
+    },
+    {
+      "pos": "tempNode.getLocation()",
+      "id": 3
+    },
+    {
+      "pos": "tempNode.getLocation()",
+      "id": 3
+    },
+    {
+      "pos": "tempNode.getLocation()",
+      "id": 3
+    },
+    {
+      "pos": "tempNode.getLocation()",
+      "id": 3
+    }
+  ]
+}
