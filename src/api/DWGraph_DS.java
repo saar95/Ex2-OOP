@@ -1,9 +1,12 @@
 package api;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
+/**
+ * This class represents a directional weighted graph.
+ * Every edge have weight and can be connected from 2 direction (even with different weight)
+ */
 public class DWGraph_DS implements directed_weighted_graph {
     private HashMap<Integer, HashMap<Integer, edge_data>> map;
     private HashMap<Integer, node_data> nodes;
@@ -17,11 +20,26 @@ public class DWGraph_DS implements directed_weighted_graph {
         this.modeCount=0;
     }
 
+    /**
+     * This method checks if there is a node_data with the given node_id in the graph.
+     * return the node if there is, else return null.
+     * @param key - the node_id
+     * @return node_data
+     */
     @Override
     public node_data getNode(int key) {
+        if(this.map.containsKey(key))
         return nodes.get(key);
+        return null;
     }
 
+    /**
+     * This method checks if there is an edge from src to dest (src -> dest)
+     * return edge_data of the edge if there is an edge from src to dest, else return null
+     * @param src
+     * @param dest
+     * @return edge_data of the edge (src -> dest)
+     */
     @Override
     public edge_data getEdge(int src, int dest) {
         if(this.nodes.containsKey(src)&&this.nodes.containsKey(dest))
@@ -31,6 +49,10 @@ public class DWGraph_DS implements directed_weighted_graph {
     }
 
     @Override
+    /**
+     * This method adds the given node to the graph.
+     * if the graph alredy this node, do nothing.
+     */
     public void addNode(node_data n) {
         HashMap<Integer, edge_data> tempmap=new HashMap<>();
         if(!this.nodes.containsKey(n.getKey())) {
@@ -40,6 +62,13 @@ public class DWGraph_DS implements directed_weighted_graph {
         }
     }
 
+    /**
+     * This method connect an edge from src to dest (src -> dest) with the given weight (w)
+     * If there is an edge from src to dest (src -> dest) do nothing
+     * @param src - the source of the edge.
+     * @param dest - the destination of the edge.
+     * @param w - positive weight representing the cost (aka time, price, etc) from src to dest src-->dest.
+     */
     @Override
     public void connect(int src, int dest, double w) {
          if (this.nodes.containsKey(src)&&this.nodes.containsKey(dest)){
@@ -62,6 +91,14 @@ public class DWGraph_DS implements directed_weighted_graph {
         return map.get(node_id).values();
     }
 
+    /**
+     * This method removes node with the given key from the graph.
+     * This method also go through all the nodes in the graph and delete all the edges
+     * which include the given node (key).
+     * If there is no node with the given key in the graph return null.
+     * @param key
+     * @return data of the removed node
+     */
     @Override
     public node_data removeNode(int key) {
         if(!this.nodes.containsKey(key))
@@ -80,6 +117,14 @@ public class DWGraph_DS implements directed_weighted_graph {
         return temp;
     }
 
+    /**
+     * This method removes an edge from src to dest (src -> dest) from the graph.
+     * return egde_data of the edge from src to dest (src -> dest)
+     * If there is no edge return null
+     * @param src
+     * @param dest
+     * @return egde_data of the edge from src to dest (src -> dest)
+     */
     @Override
     public edge_data removeEdge(int src, int dest) {
         if (getEdge(src,dest)!=null) {
@@ -92,16 +137,28 @@ public class DWGraph_DS implements directed_weighted_graph {
         return null;
     }
 
+    /**
+     * This method returns the number of the nodes in the graph.
+     * @return
+     */
     @Override
     public int nodeSize() {
         return nodes.size();
     }
 
+    /**
+     * This method returns the number of the edges in the graph (one direction edges).
+     * @return
+     */
     @Override
     public int edgeSize() {
         return edgeCount;
     }
 
+    /**
+     * This method returns the number of changes in the graph.
+     * @return
+     */
     @Override
     public int getMC() {
         return modeCount;

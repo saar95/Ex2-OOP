@@ -12,7 +12,6 @@ public class DWGraphJsonDeserializer implements JsonDeserializer<DWGraph_DS> {
         String edges = jsonObject.get("Edges").getAsString();
         directed_weighted_graph dwg = new DWGraph_DS();
         for (Map.Entry<>)
-            //almog homo
 
     }
 
