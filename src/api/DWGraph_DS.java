@@ -10,9 +10,7 @@ import java.util.Iterator;
  * Every edge have weight and can be connected from 2 direction (even with different weight)
  */
 public class DWGraph_DS implements directed_weighted_graph {
-    @SerializedName("Edges")
     private HashMap<Integer, HashMap<Integer, edge_data>> map;
-    @SerializedName("Nodes")
     private HashMap<Integer, node_data> nodes;
     private int edgeCount;
     private int modeCount;

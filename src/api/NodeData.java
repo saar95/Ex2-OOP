@@ -4,21 +4,19 @@ import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;
 
 public class NodeData implements node_data,Comparable<node_data>{
-    @SerializedName("id")
     private int key;
     private double weight;
     private String info;
     private int tag;
-    @SerializedName("pos")
     private geo_location geo;
     private static int count;
 
-    public NodeData(){
-        this.key=count;
+    public NodeData(int key){
+        this.key=key;
         this.weight=Double.MAX_VALUE;;
         this.info="";
         this.tag=Integer.MAX_VALUE;
-        this.geo=new geoLocation();
+        this.geo=new geoLocation(0,0,0);
         count++;
     }
     @Override

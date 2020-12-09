@@ -5,33 +5,35 @@ import com.google.gson.*;
 import java.lang.reflect.Type;
 import java.util.Map;
 
-//public class DWGraphJsonDeserializer implements JsonDeserializer<DWGraph_DS> {
-//    @Override
-//    public DWGraph_DS deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-//        JsonObject jsonObject = json.getAsJsonObject();
-//        directed_weighted_graph dwg = new DWGraph_DS();
-//        JsonObject edgesJsonObj = jsonObject.get("map").getAsJsonObject();
-//        for (Map.Entry<String, JsonElement> set : edgesJsonObj.entrySet()){
-//            //edge_data edge=new EdgeData();
-//            String edgesKey=set.getKey();
-//            JsonElement jsonValueElement = set.getValue();
-//            double edgeWeight=jsonValueElement.getAsJsonObject().get("w").getAsDouble();
-//            node_data src = new NodeData();
-//            node_data dest = new NodeData();
-//            dwg.connect(src.getKey(), dest.getKey(),edgeWeight);
-//        }
-//
-//        JsonObject nodesJsonObj = jsonObject.get("nodes").getAsJsonObject();
-//        for (Map.Entry<String, JsonElement> set : nodesJsonObj.entrySet()) {
-//            node_data node = new NodeData();
-//            String nodesKey = set.getKey();
-//            JsonElement jsonValueElement = set.getValue();
-//            int nodeId = jsonValueElement.getAsJsonObject().get("id").getAsInt();
-//            geo_location geo = node.getLocation();
-//            node.setLocation(geo);
-//            dwg.addNode(node);
-//        }
-//
-//        return dwg;
-//
-//}
+public class DWGraphJsonDeserializer implements JsonDeserializer<DWGraph_DS> {
+    @Override
+    public DWGraph_DS deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        DWGraph_DS dwg = new DWGraph_DS();
+        JsonObject jsonObject = json.getAsJsonObject();
+        JsonArray edgesArray= jsonObject.get("Edges").getAsJsonArray();
+        JsonArray nodesArray= jsonObject.get("Nodes").getAsJsonArray();
+
+        for (JsonElement nodes:nodesArray){
+                JsonObject nodesObject=nodes.getAsJsonObject();
+                //double x=nodesValueElement.getAsJsonObject().get("pos")
+                int id=nodesObject.get("id").getAsInt();
+                node_data tempNode=new NodeData(id);
+                String pos=nodesObject.get("pos").getAsString();
+                String [] posArray=pos.split(",");
+                double x=Double.parseDouble(posArray[0]);
+                double y=Double.parseDouble(posArray[1]);
+                double z=Double.parseDouble(posArray[2]);
+                geo_location geo=new geoLocation(x,y,z);
+                tempNode.setLocation(geo);
+                dwg.addNode(tempNode);
+        }
+        for (JsonElement edges:edgesArray){
+            JsonObject edgesObject=edges.getAsJsonObject();
+            int src=edgesObject.get("src").getAsInt();
+            double weight=edgesObject.get("w").getAsDouble();
+            int dest=edgesObject.get("dest").getAsInt();
+            dwg.connect(src,dest,weight);
+        }
+        return dwg;
+
+}

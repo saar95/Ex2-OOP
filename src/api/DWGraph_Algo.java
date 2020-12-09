@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.*;
 
@@ -204,12 +205,11 @@ public class DWGraph_Algo implements dw_graph_algorithms{
 
     @Override
     public boolean save(String file) {
-        Gson gson=new GsonBuilder().create();
+        Gson gson=new GsonBuilder().setPrettyPrinting().create();
         JsonObject edgesObject=new JsonObject();
         JsonObject nodesObject=new JsonObject();
         JsonArray edgesArray=new JsonArray();
         JsonArray nodesArray=new JsonArray();
-        //ALMOG ATA HOMO ANAAKKKKK!!!!!!!!!
         Iterator <node_data> it1 = this.dwga.getV().iterator();
         while (it1.hasNext()){
             node_data tempNode=it1.next();
@@ -222,11 +222,11 @@ public class DWGraph_Algo implements dw_graph_algorithms{
             String zLocation=String.valueOf(z);
             nodesObject.addProperty("pos",xLocation+","+yLocation+","+zLocation);
             nodesObject.addProperty("id",tempNode.getKey());
+            nodesArray.add(nodesObject);
             Iterator <edge_data> it2 = this.dwga.getE(tempNode.getKey()).iterator();
             while (it2.hasNext()){
                 edge_data tempEdge=it2.next();
                 edgesObject.addProperty("src",tempEdge.getSrc());
-                nodesArray.add(nodesObject);
                 edgesObject.addProperty("w",tempEdge.getWeight());
                 edgesObject.addProperty("dest",tempEdge.getDest());
                 edgesArray.add(edgesObject);
@@ -252,18 +252,19 @@ public class DWGraph_Algo implements dw_graph_algorithms{
     @Override
     public boolean load(String file) {
         //deserialize
-//        try {
-//            GsonBuilder builder=new GsonBuilder();
-//            builder.registerTypeAdapter(DWGraph_DS.class,new DWGraphJsonDeserializer());
-//            Gson gson=builder.create();
-//
-//            FileReader reader=new FileReader(file);
-//            this.dwga=gson.fromJson(reader,DWGraph_DS.class);
-//        }
-//        catch (FileNotFoundException e){
-//            e.printStackTrace();
-//            return false;
-//        }
+        try {
+            GsonBuilder builder=new GsonBuilder();
+            builder.registerTypeAdapter(DWGraph_DS.class,new DWGraphJsonDeserializer());
+            Gson gson=builder.create();
+
+            FileReader reader=new FileReader(file);
+            directed_weighted_graph dwg=gson.fromJson(reader,DWGraph_DS.class);
+            this.init(dwg);
+        }
+        catch (FileNotFoundException e){
+            e.printStackTrace();
+            return false;
+        }
         return true;
     }
 
