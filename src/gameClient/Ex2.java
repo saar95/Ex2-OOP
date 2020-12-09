@@ -13,5 +13,6 @@ public class Ex2 {
         startGraph.init(g1);
         startGraph.load("Data/A0");
         System.out.println("b");
+        //almog ata a homo ahi gadol she raiti ba haim sheli ya mozez zain
     }
 }
