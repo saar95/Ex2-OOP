@@ -331,7 +331,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         System.out.println(wga.save("wga.json"));
         directed_weighted_graph g1 = new DWGraph_DS();
         dw_graph_algorithms gaga =new DWGraph_Algo();
-        gaga.load("wga.json");
+        gaga.load("A0");
         gaga.save("wga1.json");
         System.out.println(wga.load("wga.json"));
 
