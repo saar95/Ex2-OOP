@@ -12,7 +12,7 @@ public class Ex2 {
         dw_graph_algorithms startGraph = new DWGraph_Algo();
         startGraph.init(g1);
         startGraph.load("A0");
-        System.out.println("a");
+        System.out.println("b");
 
 
     }
