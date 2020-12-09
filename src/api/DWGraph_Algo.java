@@ -303,12 +303,12 @@ public class DWGraph_Algo implements dw_graph_algorithms{
 
     public static void main(String[] args) {
         directed_weighted_graph g = new DWGraph_DS();
-        node_data a = new NodeData();
-        node_data b = new NodeData();
-        node_data c = new NodeData();
-        node_data d = new NodeData();
-        node_data e = new NodeData();
-        node_data f = new NodeData();
+        node_data a = new NodeData(0);
+        node_data b = new NodeData(1);
+        node_data c = new NodeData(2);
+        node_data d = new NodeData(3);
+        node_data e = new NodeData(4);
+        node_data f = new NodeData(5);
         g.addNode(a);
         g.addNode(b);
         g.addNode(c);
@@ -329,8 +329,10 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         System.out.println(wga.shortestPathDist(d.getKey(),a.getKey()));
         List l = wga.shortestPath(c.getKey(),a.getKey());
         System.out.println(wga.save("wga.json"));
-        directed_weighted_graph load=new DWGraph_DS();
-
+        directed_weighted_graph g1 = new DWGraph_DS();
+        dw_graph_algorithms gaga =new DWGraph_Algo();
+        gaga.load("wga.json");
+        gaga.save("wga1.json");
         System.out.println(wga.load("wga.json"));
 
 
