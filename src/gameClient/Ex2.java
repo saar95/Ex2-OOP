@@ -11,7 +11,7 @@ import java.util.LinkedList;
 
 public class Ex2 {
 
-    public node_data[] loadPokemon(String pLocation,dw_graph_algorithms graph){
+    public static node_data[] loadPokemon(String pLocation,dw_graph_algorithms graph){
         int counter=0;
         node_data minNode=null;
         JsonObject pObject=new JsonObject();
@@ -49,6 +49,8 @@ public class Ex2 {
         dw_graph_algorithms startGraph = new DWGraph_Algo();
         startGraph.init(g1);
         startGraph.load("Data/A0");
+        loadPokemon(game.getPokemons(), startGraph);
+        System.out.println("s");
 
     }
 }
