@@ -6,12 +6,12 @@ import com.google.gson.*;
 import com.google.gson.JsonObject;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 
 
 public class Ex2 {
 
     public static node_data[] loadPokemon(String pLocation,dw_graph_algorithms graph){
+        GsonBuilder gsonBuilder = new GsonBuilder();
         int counter=0;
         node_data minNode=null;
         JsonObject pObject=new JsonObject();
