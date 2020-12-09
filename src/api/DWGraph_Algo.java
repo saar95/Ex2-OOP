@@ -205,13 +205,12 @@ public class DWGraph_Algo implements dw_graph_algorithms{
 
     @Override
     public boolean save(String file) {
-        Gson gson=new GsonBuilder().setPrettyPrinting().create();
-        JsonObject edgesObject=new JsonObject();
-        JsonObject nodesObject=new JsonObject();
+        Gson gson=new GsonBuilder().create();
         JsonArray edgesArray=new JsonArray();
         JsonArray nodesArray=new JsonArray();
         Iterator <node_data> it1 = this.dwga.getV().iterator();
         while (it1.hasNext()){
+            JsonObject nodesObject=new JsonObject();
             node_data tempNode=it1.next();
             geo_location geo=tempNode.getLocation();
             double x=geo.x();
@@ -225,6 +224,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
             nodesArray.add(nodesObject);
             Iterator <edge_data> it2 = this.dwga.getE(tempNode.getKey()).iterator();
             while (it2.hasNext()){
+                JsonObject edgesObject=new JsonObject();
                 edge_data tempEdge=it2.next();
                 edgesObject.addProperty("src",tempEdge.getSrc());
                 edgesObject.addProperty("w",tempEdge.getWeight());
