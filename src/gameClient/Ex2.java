@@ -3,6 +3,7 @@ package gameClient;
 import Server.Game_Server_Ex2;
 import api.*;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class Ex2 {
         return arr;
     }
 
-    public static int findTheBestAgent(edge_data pEdge,CL_Pokemon p,List<CL_Agent> agentList,dw_graph_algorithms startGraph){
+    public static CL_Agent findTheBestAgent(edge_data pEdge,CL_Pokemon p,List<CL_Agent> agentList,dw_graph_algorithms startGraph){
         Iterator<CL_Agent> agentIt= agentList.iterator();
         CL_Agent bestAgent=null;
         double minDist=Double.MAX_VALUE;
@@ -38,32 +39,14 @@ public class Ex2 {
                 bestAgent=tempAgent;
             }
         }
-        return bestAgent.getID();
+        return bestAgent;
+    }
 
-
-
-
-//        double[][]a=new double[agentList.size()][2];
-//        for(int i=0;i<a.length;i++) {
-//            a[i][0] = agentList.get(i).getID();
-//            a[i][1]=Double.MAX_VALUE;
-//        }
-//        double dist=a[0][1];
-//        for (int i=0;i<pokemonList.size();i++){
-//        Iterator<CL_Pokemon> pokemonIt=pokemonList.iterator();
-//            while(pokemonIt.hasNext()){
-//                CL_Pokemon p=pokemonIt.next();
-//                for (int j=0;j<a.length;j++){
-//                 if(p.(agentList.get((int)a[j][0]).getLocation())<dist) {
-//                     dist = p.distance(agentList.get((int) a[j][0]).getLocation());
-//                     a[j][1]=
-//                 }
-//                }
-//            }
-
-
-
-   //     }
+    public static node_data agentNextNode(CL_Agent currentAgent,CL_Pokemon p,dw_graph_algorithms startGraph){
+        List<node_data> l = new ArrayList<node_data>();
+        l=startGraph.shortestPath(currentAgent.getSrcNode(), p.get_edge().getSrc());
+        node_data agentNextNode=l.get(1);
+        return agentNextNode;
     }
 
 
@@ -92,17 +75,28 @@ public class Ex2 {
             for (int i = countAgent;i<agentList.size();i++)
                 game.addAgent(i);
         }
+        ///////////////////////////////////////////////////////////////////////////////after starting the game
+        game.startGame();
+        while (game.isRunning()){
 
-        //update the pokemons edges and move the agents according the shortestPath
-        Iterator<CL_Pokemon> pokemonIt= pokemonList.iterator();
-        while(pokemonIt.hasNext()){
-            CL_Pokemon p=pokemonIt.next();
-            Arena.updateEdge(p,startGraph.getGraph());//מתאימה לכל פוקימון את הצלע שלו בגרף
-            edge_data tempEdge=p.get_edge();
-            game.chooseNextEdge(findTheBestAgent(tempEdge,p,agentList,startGraph), tempEdge.getDest());
-            ///  צריך לחשוב בפונ הזאת מה קורה עם הסוכן כבר בתנועה לפוקימון אחר--isMoving
+            //update the pokemons edges and move the agents according the shortestPath
+            Iterator<CL_Pokemon> pokemonIt= pokemonList.iterator();
+            while(pokemonIt.hasNext()){
+                CL_Pokemon p=pokemonIt.next();
+                Arena.updateEdge(p,startGraph.getGraph());//מתאימה לכל פוקימון את הצלע שלו בגרף
+                edge_data pTempEdge=p.get_edge();
+
+                if (!findTheBestAgent(pTempEdge,p,agentList,startGraph).isMoving() && agentNextNode(findTheBestAgent(pTempEdge,p,agentList,startGraph),p,startGraph)!=null)//בודק שהסוכן המתאים לא בתנועה
+                {
+
+                    node_data agentDest=agentNextNode(findTheBestAgent(pTempEdge,p,agentList,startGraph),p,startGraph);
+                    game.chooseNextEdge(findTheBestAgent(pTempEdge,p,agentList,startGraph).getID(),agentDest.getKey());
+                    game.move();
+                }
+            }
         }
 
     }
+
 
 }
