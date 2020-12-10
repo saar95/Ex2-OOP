@@ -53,7 +53,7 @@ public class DWGraph_DS implements directed_weighted_graph {
     @Override
     /**
      * This method adds the given node to the graph.
-     * if the graph alredy this node, do nothing.
+     * if the graph already have this node, do nothing.
      */
     public void addNode(node_data n) {
         HashMap<Integer, edge_data> tempmap=new HashMap<>();
