@@ -1,9 +1,8 @@
 package gameClient;
-
 import Server.Game_Server_Ex2;
 import api.*;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,19 +26,37 @@ public class Ex2 {
         return arr;
     }
 
-    public static CL_Agent findTheBestAgent(edge_data pEdge,CL_Pokemon p,List<CL_Agent> agentList,dw_graph_algorithms startGraph){
-        Iterator<CL_Agent> agentIt= agentList.iterator();
+    public static HashMap<CL_Agent,CL_Pokemon> matchPokemonsToAgents(List<CL_Pokemon> pokemonList, List<CL_Agent> agentList, dw_graph_algorithms startGraph){
+        HashMap<CL_Agent,CL_Pokemon> table = new HashMap<CL_Agent,CL_Pokemon>();
+        CL_Pokemon tempPoke=null;
         CL_Agent bestAgent=null;
         double minDist=Double.MAX_VALUE;
-        while (agentIt.hasNext()){
-            CL_Agent tempAgent=agentIt.next();
-            double dist=startGraph.shortestPathDist(pEdge.getSrc(), tempAgent.getSrcNode());
-            if (dist<minDist){
-                minDist=dist;
-                bestAgent=tempAgent;
-            }
+        Iterator<CL_Pokemon> pokemonIt=pokemonList.iterator();
+        while (pokemonIt.hasNext()){
+            tempPoke=pokemonIt.next();
+            Iterator<CL_Agent> agentIt=agentList.iterator();
+                while (agentIt.hasNext()) {
+                    CL_Agent tempAgent = agentIt.next();
+                    if (startGraph.shortestPathDist(tempAgent.getID(),tempPoke.get_edge().getDest()) < minDist) {
+                        minDist = startGraph.shortestPathDist(tempAgent.getID(),tempPoke.get_edge().getDest());
+                        bestAgent = tempAgent;
+                    }
+                }
+                table.put(bestAgent,tempPoke);
+                agentList.remove(bestAgent);
         }
-        return bestAgent;
+//        Iterator<CL_Agent> agentIt= agentList.iterator();
+//        CL_Agent bestAgent=null;
+//        double minDist=Double.MAX_VALUE;
+//        while (agentIt.hasNext()){
+//            CL_Agent tempAgent=agentIt.next();
+//            double dist=startGraph.shortestPathDist(pEdge.getSrc(), tempAgent.getSrcNode());
+//            if (dist<minDist){
+//                minDist=dist;
+//                bestAgent=tempAgent;
+//            }
+//        }
+        return table;
     }
 
     public static node_data agentNextNode(CL_Agent currentAgent,CL_Pokemon p,dw_graph_algorithms startGraph){
@@ -86,11 +103,10 @@ public class Ex2 {
                 Arena.updateEdge(p,startGraph.getGraph());//מתאימה לכל פוקימון את הצלע שלו בגרף
                 edge_data pTempEdge=p.get_edge();
 
-                if (!findTheBestAgent(pTempEdge,p,agentList,startGraph).isMoving() && agentNextNode(findTheBestAgent(pTempEdge,p,agentList,startGraph),p,startGraph)!=null)//בודק שהסוכן המתאים לא בתנועה
+               // if (!matchPokemonsToAgents(pokemonList,agentList,startGraph).isMoving() && agentNextNode(matchPokemonsToAgents(pTempEdge,p,agentList,startGraph),p,startGraph)!=null)//בודק שהסוכן המתאים לא בתנועה
                 {
-
-                    node_data agentDest=agentNextNode(findTheBestAgent(pTempEdge,p,agentList,startGraph),p,startGraph);
-                    game.chooseNextEdge(findTheBestAgent(pTempEdge,p,agentList,startGraph).getID(),agentDest.getKey());
+                  //  node_data agentDest=agentNextNode(matchPokemonsToAgents(pTempEdge,p,agentList,startGraph),p,startGraph);
+                 //   game.chooseNextEdge(matchPokemonsToAgents(pTempEdge,p,agentList,startGraph).getID(),agentDest.getKey());
                     game.move();
                 }
             }
