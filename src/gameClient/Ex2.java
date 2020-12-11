@@ -26,8 +26,8 @@ public class Ex2 {
         return arr;
     }
 
-    public static HashMap<CL_Agent,CL_Pokemon> matchPokemonsToAgents(List<CL_Pokemon> pokemonList, List<CL_Agent> agentList, dw_graph_algorithms startGraph){
-        HashMap<CL_Agent,CL_Pokemon> table = new HashMap<CL_Agent,CL_Pokemon>();
+    public static HashMap<CL_Agent,HashMap<CL_Pokemon,List<node_data>>> matchPokemonsToAgents(List<CL_Pokemon> pokemonList, List<CL_Agent> agentList, dw_graph_algorithms startGraph){
+        HashMap<CL_Agent,HashMap<CL_Pokemon,List<node_data>>> pokemonTable = new HashMap<>();
         CL_Pokemon tempPoke=null;
         CL_Agent bestAgent=null;
         double minDist=Double.MAX_VALUE;
@@ -42,7 +42,10 @@ public class Ex2 {
                         bestAgent = tempAgent;
                     }
                 }
-                table.put(bestAgent,tempPoke);
+                List<node_data> patch = startGraph.shortestPath(bestAgent.getID(),tempPoke.get_edge().getDest());
+                HashMap<CL_Pokemon,List<node_data>> agentPath = new HashMap<>();
+                agentPath.put(tempPoke,patch);
+                pokemonTable.put(bestAgent,agentPath);
                 agentList.remove(bestAgent);
         }
 //        Iterator<CL_Agent> agentIt= agentList.iterator();
@@ -56,7 +59,7 @@ public class Ex2 {
 //                bestAgent=tempAgent;
 //            }
 //        }
-        return table;
+        return pokemonTable;
     }
 
     public static node_data agentNextNode(CL_Agent currentAgent,CL_Pokemon p,dw_graph_algorithms startGraph){
@@ -92,22 +95,33 @@ public class Ex2 {
             for (int i = countAgent;i<agentList.size();i++)
                 game.addAgent(i);
         }
-        ///////////////////////////////////////////////////////////////////////////////after starting the game
+
         game.startGame();
         while (game.isRunning()){
-
-            //update the pokemons edges and move the agents according the shortestPath
-            Iterator<CL_Pokemon> pokemonIt= pokemonList.iterator();
-            while(pokemonIt.hasNext()){
-                CL_Pokemon p=pokemonIt.next();
-                Arena.updateEdge(p,startGraph.getGraph());//מתאימה לכל פוקימון את הצלע שלו בגרף
-                edge_data pTempEdge=p.get_edge();
-
-               // if (!matchPokemonsToAgents(pokemonList,agentList,startGraph).isMoving() && agentNextNode(matchPokemonsToAgents(pTempEdge,p,agentList,startGraph),p,startGraph)!=null)//בודק שהסוכן המתאים לא בתנועה
+            //update all the edges in CL_Pokemon list.
+            Iterator<CL_Pokemon> updatePokemonIt= pokemonList.iterator();
+            while(updatePokemonIt.hasNext()) {
+                CL_Pokemon p = updatePokemonIt.next();
+                Arena.updateEdge(p, startGraph.getGraph());
+            }
+            /*moving all the agents to the closet pokemons.
+            This code is ineffective.we must use threads here.
+             */
+                HashMap<CL_Agent,HashMap<CL_Pokemon,List<node_data>>> pokemonTable=matchPokemonsToAgents(pokemonList,agentList,startGraph);
+                Iterator<CL_Agent> agentIt = pokemonTable.keySet().iterator();
+                while (agentIt.hasNext()){
+                    CL_Agent currAgent=agentIt.next();
+                    Iterator<CL_Pokemon> pokemonIt=pokemonTable.get(currAgent).keySet().iterator();
+                    CL_Pokemon currPokemon=pokemonIt.next();
+                    if(!currAgent.isMoving()&&pokemonTable.get(currAgent).get(currPokemon)!=null){
+                        for(int i=0;i<pokemonTable.get(currAgent).get(currPokemon).size();i++)
+                        game.chooseNextEdge(currAgent.getID(),pokemonTable.get(currAgent).get(currPokemon).indexOf(i));
+                        game.move();
+                    }
                 {
                   //  node_data agentDest=agentNextNode(matchPokemonsToAgents(pTempEdge,p,agentList,startGraph),p,startGraph);
                  //   game.chooseNextEdge(matchPokemonsToAgents(pTempEdge,p,agentList,startGraph).getID(),agentDest.getKey());
-                    game.move();
+                    //game.move();
                 }
             }
         }
