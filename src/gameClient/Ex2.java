@@ -1,32 +1,95 @@
 package gameClient;
+
 import Server.Game_Server_Ex2;
 import api.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.*;
 
-public class Ex2 {
-
-    public static node_data[] loadPokemon(List<CL_Pokemon> l,dw_graph_algorithms graph){
-        node_data [] arr = new node_data[l.size()];
-        node_data temp=null;
-        Iterator<node_data> it = graph.getGraph().getV().iterator();
-        for (int i=0;i<l.size();i++){
-            double minDist =Double.MAX_VALUE;
-            while(it.hasNext()) {
-            temp = it.next();
-                if(temp.getLocation().distance(l.get(i).getLocation())<minDist) {
-                minDist = temp.getLocation().distance(l.get(i).getLocation());
-                arr[i] = temp;
-                }
-            }
-        }
-        return arr;
+public class Ex2 implements Runnable{
+    private static MyFrame _win;
+    private static Arena _ar;
+    public static void main(String[] a) {
+        Thread client = new Thread(new Ex2());
+        client.start();
     }
 
-    public static HashMap<CL_Agent,HashMap<CL_Pokemon,List<node_data>>> matchPokemonsToAgents(List<CL_Pokemon> pokemonList, List<CL_Agent> agentList, dw_graph_algorithms startGraph){
+    @Override
+    public void run() {
+        int scenario_num = 11;
+        game_service game = Game_Server_Ex2.getServer(scenario_num); // you have [0,23] games
+        //	int id = 999;
+        //	game.login(id);
+        String g = game.getGraph();
+        String pks = game.getPokemons();
+        directed_weighted_graph gg = game.getJava_Graph_Not_to_be_used();
+        init(game);
+        game.startGame();
+        _win.setTitle("Ex2 - OOP: (Almog Homo Solution) "+game.toString());
+        int ind=0;
+        long dt=100;
+
+        while(game.isRunning()) {
+            moveAgants(game, gg);
+            try {
+                if(ind%1==0) {_win.repaint();}
+                Thread.sleep(dt);
+                ind++;
+            }
+            catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
+        String res = game.toString();
+
+        System.out.println(res);
+        System.exit(0);
+    }
+    /**
+     * Moves each of the agents along the edge,
+     * in case the agent is on a node the next destination (next edge) is chosen (randomly).
+     * @param game
+     * @param gg
+     * @param
+     */
+    private static void moveAgants(game_service game, directed_weighted_graph gg) {
+        List<CL_Agent> agentList = Arena.getAgents(game.getAgents(), gg);
+        _ar.setAgents(agentList);
+        String fs =  game.getPokemons();
+        List<CL_Pokemon> pokemosList = Arena.json2Pokemons(fs);
+        _ar.setPokemons(pokemosList);
+        HashMap<CL_Agent,HashMap<CL_Pokemon,List<node_data>>> pokemonTable = matchPokemonsToAgents(game);
+        for(int i=0;i<pokemonTable.get(i).size();i++) {
+            Iterator<CL_Agent> agentIt = pokemonTable.keySet().iterator();
+            CL_Agent ag = agentIt.next();
+            int id = ag.getID();
+            int dest = ag.getNextNode();
+            int src = ag.getSrcNode();
+            double v = ag.getValue();
+            if(dest==-1) {
+                dest = pokemonTable.get(i).get(0).get(0).getKey();
+                game.chooseNextEdge(ag.getID(), dest);
+                System.out.println("Agent: "+id+", val: "+v+"   turned to node: "+dest);
+            }
+        }
+    }
+    private static HashMap<CL_Agent, HashMap<CL_Pokemon,List<node_data>>> matchPokemonsToAgents(game_service game){
+        dw_graph_algorithms startGraph = new DWGraph_Algo();
+        try {
+            FileWriter myWriter = new FileWriter("gameGraph.txt");
+            myWriter.write(game.getGraph());
+            myWriter.close();
+            System.out.println("Successfully wrote to the file.");
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+        startGraph.load("gameGraph.txt");
+        List <CL_Agent> agentList = _ar.getAgents();
+        List <CL_Pokemon> pokemonList = Arena.json2Pokemons(game.getPokemons());
         HashMap<CL_Agent,HashMap<CL_Pokemon,List<node_data>>> pokemonTable = new HashMap<>();
         CL_Pokemon tempPoke=null;
         CL_Agent bestAgent=null;
@@ -35,126 +98,74 @@ public class Ex2 {
         while (pokemonIt.hasNext()){
             tempPoke=pokemonIt.next();
             Iterator<CL_Agent> agentIt=agentList.iterator();
-                while (agentIt.hasNext()) {
-                    CL_Agent tempAgent = agentIt.next();
-                    if (startGraph.shortestPathDist(tempAgent.getID(),tempPoke.get_edge().getDest()) < minDist) {
-                        minDist = startGraph.shortestPathDist(tempAgent.getID(),tempPoke.get_edge().getDest());
-                        bestAgent = tempAgent;
-                    }
+            while (agentIt.hasNext()) {
+                CL_Agent tempAgent = agentIt.next();
+                int a = tempAgent.getSrcNode();
+                int b = tempPoke.get_edge().getDest();
+                if (startGraph.shortestPathDist(tempAgent.getSrcNode(),tempPoke.get_edge().getDest()) < minDist) {
+                    minDist = startGraph.shortestPathDist(tempAgent.getSrcNode(),tempPoke.get_edge().getDest());
+                    bestAgent = tempAgent;
                 }
-                List<node_data> path = startGraph.shortestPath(bestAgent.getID(),tempPoke.get_edge().getDest());
-                HashMap<CL_Pokemon,List<node_data>> agentPath = new HashMap<>();
-                agentPath.put(tempPoke,path);
-                pokemonTable.put(bestAgent,agentPath);
-                agentList.remove(bestAgent);
+            }
+            List<node_data> path = startGraph.shortestPath(bestAgent.getSrcNode(),tempPoke.get_edge().getDest());
+            HashMap<CL_Pokemon,List<node_data>> agentPath = new HashMap<>();
+            agentPath.put(tempPoke,path);
+            pokemonTable.put(bestAgent,agentPath);
+            agentList.remove(bestAgent);
         }
-//        Iterator<CL_Agent> agentIt= agentList.iterator();
-//        CL_Agent bestAgent=null;
-//        double minDist=Double.MAX_VALUE;
-//        while (agentIt.hasNext()){
-//            CL_Agent tempAgent=agentIt.next();
-//            double dist=startGraph.shortestPathDist(pEdge.getSrc(), tempAgent.getSrcNode());
-//            if (dist<minDist){
-//                minDist=dist;
-//                bestAgent=tempAgent;
-//            }
-//        }
         return pokemonTable;
     }
-
-    public static node_data agentNextNode(CL_Agent currentAgent,CL_Pokemon p,dw_graph_algorithms startGraph){
-        List<node_data> l = new ArrayList<node_data>();
-        l=startGraph.shortestPath(currentAgent.getSrcNode(), p.get_edge().getSrc());
-        node_data agentNextNode=l.get(1);
-        return agentNextNode;
+    /**
+     * a very simple random walk implementation!
+     * @param g
+     * @param src
+     * @return
+     */
+    private static int nextNode(directed_weighted_graph g, int src) {
+        int ans = -1;
+        Collection<edge_data> ee = g.getE(src);
+        Iterator<edge_data> itr = ee.iterator();
+        int s = ee.size();
+        int r = (int)(Math.random()*s);
+        int i=0;
+        while(i<r) {itr.next();i++;}
+        ans = itr.next().getDest();
+        return ans;
     }
+    private void init(game_service game) {
+        String g = game.getGraph();
+        String fs = game.getPokemons();
+        directed_weighted_graph gg = game.getJava_Graph_Not_to_be_used();
+        //gg.init(g);
+        _ar = new Arena();
+        _ar.setGraph(gg);
+        _ar.setPokemons(Arena.json2Pokemons(fs));
+        _win = new MyFrame("test Ex2");
+        _win.setSize(1000, 700);
+        _win.update(_ar);
 
 
-    public static void main(String[] args) {
-        int level_number=0;
-        int countAgent=0;
-        game_service game = Game_Server_Ex2.getServer(level_number);
-        directed_weighted_graph g1 = new DWGraph_DS();
-        dw_graph_algorithms startGraph = new DWGraph_Algo();
-        startGraph.init(g1);
-        startGraph.load("Data/A0");
-        List<CL_Pokemon> pokemonList = Arena.json2Pokemons(game.getPokemons());
-        List<CL_Agent> agentList = Arena.getAgents(game.getAgents(),startGraph.getGraph());
+        _win.show();
+        String info = game.toString();
+        JSONObject line;
+        try {
+            line = new JSONObject(info);
+            JSONObject ttt = line.getJSONObject("GameServer");
+            int rs = ttt.getInt("agents");
+            System.out.println(info);
+            System.out.println(game.getPokemons());
+            int src_node = 0;  // arbitrary node, you should start at one of the pokemon
+            ArrayList<CL_Pokemon> cl_fs = Arena.json2Pokemons(game.getPokemons());
+            for(int a = 0;a<cl_fs.size();a++) { Arena.updateEdge(cl_fs.get(a),gg);}
+            for(int a = 0;a<rs;a++) {
+                int ind = a%cl_fs.size();
+                CL_Pokemon c = cl_fs.get(ind);
+                int nn = c.get_edge().getDest();
+                if(c.getType()<0 ) {nn = c.get_edge().getSrc();}
 
-        //update the location of agents
-        if(pokemonList.size()>agentList.size()) {
-            for (int i = 0; i <agentList.size(); i++) {
-                game.addAgent(loadPokemon(pokemonList, startGraph)[i].getKey());
+                game.addAgent(nn);
             }
         }
-        else {
-            for (int i = 0; i < pokemonList.size(); i++) {
-                game.addAgent(loadPokemon(pokemonList, startGraph)[i].getKey());
-                countAgent++;
-            }
-            for (int i = countAgent;i<agentList.size();i++)
-                game.addAgent(i);
-        }
-
-        game.startGame();
-        while (game.isRunning()){
-            //update all the edges in CL_Pokemon list.
-            Iterator<CL_Pokemon> updatePokemonIt= pokemonList.iterator();
-            while(updatePokemonIt.hasNext()) {
-                CL_Pokemon p = updatePokemonIt.next();
-                Arena.updateEdge(p, startGraph.getGraph());
-            }
-            /*moving all the agents to the closet pokemons.
-            This code is ineffective.we must use threads here.
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-            ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO ALMOG ATA KAZE HOMO
-
-             */
-                HashMap<CL_Agent,HashMap<CL_Pokemon,List<node_data>>> pokemonTable=matchPokemonsToAgents(pokemonList,agentList,startGraph);
-                Iterator<CL_Agent> agentIt = pokemonTable.keySet().iterator();
-                while (agentIt.hasNext()){
-                    CL_Agent currAgent=agentIt.next();
-                    Iterator<CL_Pokemon> pokemonIt=pokemonTable.get(currAgent).keySet().iterator();
-                    CL_Pokemon currPokemon=pokemonIt.next();
-                    if(!currAgent.isMoving()&&pokemonTable.get(currAgent).get(currPokemon)!=null){
-                        for(int i=0;i<pokemonTable.get(currAgent).get(currPokemon).size();i++)
-                        game.chooseNextEdge(currAgent.getID(),pokemonTable.get(currAgent).get(currPokemon).indexOf(i));
-                        game.move();
-                    }
-                {
-                  //  node_data agentDest=agentNextNode(matchPokemonsToAgents(pTempEdge,p,agentList,startGraph),p,startGraph);
-                 //   game.chooseNextEdge(matchPokemonsToAgents(pTempEdge,p,agentList,startGraph).getID(),agentDest.getKey());
-                    //game.move();
-                }
-            }
-        }
-
+        catch (JSONException e) {e.printStackTrace();}
     }
-
-
 }

@@ -301,47 +301,38 @@ public class DWGraph_Algo implements dw_graph_algorithms{
 
 
 
-    public static void main(String[] args) {
-        directed_weighted_graph g = new DWGraph_DS();
-        node_data a = new NodeData(0);
-        node_data b = new NodeData(1);
-        node_data c = new NodeData(2);
-        node_data d = new NodeData(3);
-        node_data e = new NodeData(4);
-        node_data f = new NodeData(5);
-        g.addNode(a);
-        g.addNode(b);
-        g.addNode(c);
-        g.addNode(d);
-//        g.addNode(e);
-//        g.addNode(f);
-        g.connect(a.getKey(),b.getKey(),2);
-        g.connect(a.getKey(),c.getKey(),4);
-        g.connect(b.getKey(),d.getKey(),6);
-        g.connect(c.getKey(),b.getKey(),1);
-        g.connect(d.getKey(),b.getKey(),9);
-        //g.connect(d.getKey(),a.getKey(),12);
-        //g.connect(b.getKey(),a.getKey(),1);
-        dw_graph_algorithms wga=new DWGraph_Algo();
-        wga.init(g);
-        directed_weighted_graph copy=new DWGraph_DS();
-        System.out.println(wga.isConnected());
-        System.out.println(wga.shortestPathDist(d.getKey(),a.getKey()));
-        List l = wga.shortestPath(c.getKey(),a.getKey());
-        System.out.println(wga.save("wga.json"));
-        directed_weighted_graph g1 = new DWGraph_DS();
-        dw_graph_algorithms gaga =new DWGraph_Algo();
-        gaga.load("A0");
-        gaga.save("wga1.json");
-        System.out.println(wga.load("wga.json"));
-
-
-
-
-
-
-
-
-
-    }
+//    public static void main(String[] args) {
+//        directed_weighted_graph g = new DWGraph_DS();
+//        node_data a = new NodeData(0);
+//        node_data b = new NodeData(1);
+//        node_data c = new NodeData(2);
+//        node_data d = new NodeData(3);
+//        node_data e = new NodeData(4);
+//        node_data f = new NodeData(5);
+//        g.addNode(a);
+//        g.addNode(b);
+//        g.addNode(c);
+//        g.addNode(d);
+////        g.addNode(e);
+////        g.addNode(f);
+//        g.connect(a.getKey(),b.getKey(),2);
+//        g.connect(a.getKey(),c.getKey(),4);
+//        g.connect(b.getKey(),d.getKey(),6);
+//        g.connect(c.getKey(),b.getKey(),1);
+//        g.connect(d.getKey(),b.getKey(),9);
+//        //g.connect(d.getKey(),a.getKey(),12);
+//        //g.connect(b.getKey(),a.getKey(),1);
+//        dw_graph_algorithms wga=new DWGraph_Algo();
+//        wga.init(g);
+//        directed_weighted_graph copy=new DWGraph_DS();
+//        System.out.println(wga.isConnected());
+//        System.out.println(wga.shortestPathDist(d.getKey(),a.getKey()));
+//        List l = wga.shortestPath(c.getKey(),a.getKey());
+//        System.out.println(wga.save("wga.json"));
+//        directed_weighted_graph g1 = new DWGraph_DS();
+//        dw_graph_algorithms gaga =new DWGraph_Algo();
+//        gaga.load("A0");
+//        gaga.save("wga1.json");
+//        System.out.println(wga.load("wga.json"));
+//    }
 }
