@@ -27,6 +27,7 @@ public class Ex2 implements Runnable{
         String pks = game.getPokemons();
         directed_weighted_graph gg = game.getJava_Graph_Not_to_be_used();
         init(game);
+        List <CL_Pokemon> l = updatePoke(game);
         game.startGame();
         _win.setTitle("Ex2 - OOP: (Almog Homo Solution) "+game.toString());
         int ind=0;
@@ -56,6 +57,7 @@ public class Ex2 implements Runnable{
      * @param
      */
     private static void moveAgants(game_service game, directed_weighted_graph gg) {
+        updatePoke(game);
         List<CL_Agent> agentList = Arena.getAgents(game.getAgents(), gg);
         _ar.setAgents(agentList);
         String fs =  game.getPokemons();
@@ -76,7 +78,7 @@ public class Ex2 implements Runnable{
             }
         }
     }
-    private static HashMap<CL_Agent, HashMap<CL_Pokemon,List<node_data>>> matchPokemonsToAgents(game_service game){
+    public static dw_graph_algorithms loadGraph(game_service game){
         dw_graph_algorithms startGraph = new DWGraph_Algo();
         try {
             FileWriter myWriter = new FileWriter("gameGraph.txt");
@@ -88,6 +90,10 @@ public class Ex2 implements Runnable{
             e.printStackTrace();
         }
         startGraph.load("gameGraph.txt");
+        return startGraph;
+    }
+    private static HashMap<CL_Agent, HashMap<CL_Pokemon,List<node_data>>> matchPokemonsToAgents(game_service game){
+        dw_graph_algorithms startGraph = loadGraph(game);
         List <CL_Agent> agentList = _ar.getAgents();
         List <CL_Pokemon> pokemonList = Arena.json2Pokemons(game.getPokemons());
         HashMap<CL_Agent,HashMap<CL_Pokemon,List<node_data>>> pokemonTable = new HashMap<>();
@@ -115,22 +121,23 @@ public class Ex2 implements Runnable{
         }
         return pokemonTable;
     }
-    /**
-     * a very simple random walk implementation!
-     * @param g
-     * @param src
-     * @return
-     */
-    private static int nextNode(directed_weighted_graph g, int src) {
-        int ans = -1;
-        Collection<edge_data> ee = g.getE(src);
-        Iterator<edge_data> itr = ee.iterator();
-        int s = ee.size();
-        int r = (int)(Math.random()*s);
-        int i=0;
-        while(i<r) {itr.next();i++;}
-        ans = itr.next().getDest();
-        return ans;
+
+    private static List<CL_Pokemon> updatePoke(game_service game) {
+        dw_graph_algorithms startGraph = loadGraph(game);
+        List <CL_Pokemon> pokemonList = Arena.json2Pokemons(game.getPokemons());
+        Iterator<CL_Pokemon> pokemonIt = pokemonList.iterator();
+        while (pokemonIt.hasNext()){
+            CL_Pokemon tempPoke = pokemonIt.next();
+            Arena.updateEdge(tempPoke,startGraph.getGraph());
+        }
+//        Collection<edge_data> ee = startGraph.getGraph().getE(pokemonIt.next().;
+//        Iterator<edge_data> itr = ee.iterator();
+//        int s = ee.size();
+//        int r = (int)(Math.random()*s);
+//        int i=0;
+//        while(i<r) {itr.next();i++;}
+//        ans = itr.next().getDest();
+        return pokemonList;
     }
     private void init(game_service game) {
         String g = game.getGraph();
