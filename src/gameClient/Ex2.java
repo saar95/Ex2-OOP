@@ -38,7 +38,7 @@ public class Ex2 implements Runnable{
         while(game.isRunning()) {
             moveAgants(game, gg);
             try {
-                if(ind%5==0) {_win.repaint();}
+                if(ind%1==0) {_win.repaint();}
                 Thread.sleep(dt);
                 ind++;
             }
@@ -59,7 +59,6 @@ public class Ex2 implements Runnable{
      * @param
      */
     private static void moveAgants(game_service game, directed_weighted_graph gg) {
-        int count=0;
         String lg = game.move();
         List<CL_Agent> agentList = Arena.getAgents(lg, gg);
         _ar.setAgents(agentList);
@@ -82,8 +81,13 @@ public class Ex2 implements Runnable{
                     dest = nodePath.get(1).getKey();
                     game.chooseNextEdge(ag.getID(), dest);
                     System.out.println("Agent: " + id + ", val: " + v + "   turned to node: " + dest);
-                    count++;
                     nodePath.remove(0);
+                }
+                else if(pokemonTable.get(ag).get(currPoke)==null){
+                    dest=currPoke.get_edge().getSrc();
+                    game.chooseNextEdge(ag.getID(),dest);
+                    System.out.println("Agent: " + id + ", val: " + v + "   turned to node: " + dest);
+
                 }
             }
         }
