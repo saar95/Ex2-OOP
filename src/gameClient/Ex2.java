@@ -47,7 +47,7 @@ public class Ex2 implements Runnable{
         String res = game.toString();
 
         System.out.println(res);
-        System.exit(0);
+       System.exit(0);
     }
     /**
      * Moves each of the agents along the edge,
@@ -57,36 +57,44 @@ public class Ex2 implements Runnable{
      * @param
      */
     private static void moveAgants(game_service game, directed_weighted_graph gg) {
-        updatePoke(game);
-        List<CL_Agent> agentList = Arena.getAgents(game.getAgents(), gg);
+        int count=0;
+        String lg = game.move();
+        List<CL_Agent> agentList = Arena.getAgents(lg, gg);
         _ar.setAgents(agentList);
         String fs =  game.getPokemons();
-        List<CL_Pokemon> pokemosList = Arena.json2Pokemons(fs);
+        List<CL_Pokemon> pokemosList = updatePoke(game);
         _ar.setPokemons(pokemosList);
         HashMap<CL_Agent,HashMap<CL_Pokemon,List<node_data>>> pokemonTable = matchPokemonsToAgents(game);
-        for(int i=0;i<pokemonTable.get(i).size();i++) {
-            Iterator<CL_Agent> agentIt = pokemonTable.keySet().iterator();
+        Iterator<CL_Agent> agentIt = pokemonTable.keySet().iterator();
+        while(agentIt.hasNext()) {
             CL_Agent ag = agentIt.next();
             int id = ag.getID();
             int dest = ag.getNextNode();
             int src = ag.getSrcNode();
             double v = ag.getValue();
             if(dest==-1) {
-                dest = pokemonTable.get(i).get(0).get(0).getKey();
-                game.chooseNextEdge(ag.getID(), dest);
-                System.out.println("Agent: "+id+", val: "+v+"   turned to node: "+dest);
+                Iterator<CL_Pokemon> pokeIt = pokemonTable.get(ag).keySet().iterator();
+                CL_Pokemon currPoke=pokeIt.next();
+                if(pokemonTable.get(ag).get(currPoke).get(0)!=null) {
+                    List<node_data> nodePath = pokemonTable.get(ag).get(currPoke);
+                    dest = nodePath.get(1).getKey();
+                    game.chooseNextEdge(ag.getID(), dest);
+                    System.out.println("Agent: " + id + ", val: " + v + "   turned to node: " + dest);
+                    count++;
+                    nodePath.remove(0);
+                    }
+                }
             }
+         game.move();
         }
-    }
+
     public static dw_graph_algorithms loadGraph(game_service game){
         dw_graph_algorithms startGraph = new DWGraph_Algo();
         try {
             FileWriter myWriter = new FileWriter("gameGraph.txt");
             myWriter.write(game.getGraph());
             myWriter.close();
-            System.out.println("Successfully wrote to the file.");
         } catch (IOException e) {
-            System.out.println("An error occurred.");
             e.printStackTrace();
         }
         startGraph.load("gameGraph.txt");
@@ -95,7 +103,7 @@ public class Ex2 implements Runnable{
     private static HashMap<CL_Agent, HashMap<CL_Pokemon,List<node_data>>> matchPokemonsToAgents(game_service game){
         dw_graph_algorithms startGraph = loadGraph(game);
         List <CL_Agent> agentList = _ar.getAgents();
-        List <CL_Pokemon> pokemonList = Arena.json2Pokemons(game.getPokemons());
+        List <CL_Pokemon> pokemonList = updatePoke(game);
         HashMap<CL_Agent,HashMap<CL_Pokemon,List<node_data>>> pokemonTable = new HashMap<>();
         CL_Pokemon tempPoke=null;
         CL_Agent bestAgent=null;
@@ -118,6 +126,7 @@ public class Ex2 implements Runnable{
             agentPath.put(tempPoke,path);
             pokemonTable.put(bestAgent,agentPath);
             agentList.remove(bestAgent);
+            minDist=Double.MAX_VALUE;
         }
         return pokemonTable;
     }
