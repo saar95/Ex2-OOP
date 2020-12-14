@@ -45,9 +45,9 @@ public class MyFrame extends JFrame{
 		int h = this.getHeight();
 		g.clearRect(0, 0, w, h);
 	//	updateFrame();
+		drawAgants(g);
 		drawPokemons(g);
 		drawGraph(g);
-		drawAgants(g);
 		drawInfo(g);
 		
 	}
@@ -106,7 +106,6 @@ public class MyFrame extends JFrame{
 			int r=8;
 			i++;
 			if(c!=null) {
-
 				geo_location fp = this._w2f.world2frame(c);
 				g.fillOval((int)fp.x()-r, (int)fp.y()-r, 2*r, 2*r);
 			}
