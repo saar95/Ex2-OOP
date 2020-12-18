@@ -16,17 +16,38 @@ import java.util.List;
 public class Ex2 implements Runnable{
     private static MyJFrame _win;
     private static Arena _ar;
+    private static long id;
+    private static int level;
+    private static Jlabel jl;
     public static void main(String[] a) {
-        Thread client = new Thread(new Ex2());
-        client.start();
+        Ex2 ex2=new Ex2();
+        if (a.length==0)
+        {
+            jl=new Jlabel(ex2);
+            jl.setVisible(true);
+        }
+        else {
+            jl.setId(Long.parseLong(a[0]));
+            jl.setLevel(Integer.parseInt(a[1]));
+        }
+    }
+    public long getID(){
+        return this.id;
+    }
+    public int getLevel(){
+        return this.level;
+    }
+    public void setLevel(int level){
+        this.level=level;
+    }
+    public void setId(int id){
+        this.id=id;
     }
 
     @Override
     public void run() {
-        int scenario_num = 0;
-        game_service game = Game_Server_Ex2.getServer(scenario_num); // you have [0,23] games
-        //	int id = 999;
-        //	game.login(id);
+        game_service game = Game_Server_Ex2.getServer(jl.getLevel()); // you have [0,23] games
+        game.login(jl.getId());
         String g = game.getGraph();
         String pks = game.getPokemons();
         directed_weighted_graph gg = loadGraph(game).getGraph();
