@@ -1,37 +1,40 @@
+package api;
+
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class DWGraph_AlgoTest {
 
-    @org.junit.jupiter.api.Test
+    @Test
     void init() {
-        int a =0;
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void getGraph() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void copy() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void isConnected() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void shortestPathDist() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void shortestPath() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void save() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void load() {
     }
 }

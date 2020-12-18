@@ -127,7 +127,7 @@ public class Ex2 implements Runnable{
         startGraph.load("gameGraph.txt");
         return startGraph;
     }
-    private static HashMap<CL_Agent, HashMap<CL_Pokemon,List<node_data>>> matchPokemonsToAgents(game_service game){
+    public static HashMap<CL_Agent, HashMap<CL_Pokemon,List<node_data>>> matchPokemonsToAgents(game_service game){
         dw_graph_algorithms startGraph = loadGraph(game);
         List <CL_Pokemon> pokemonList = updatePoke(game);
         HashMap<CL_Agent,HashMap<CL_Pokemon,List<node_data>>> pokemonTable = new HashMap<>();
@@ -162,7 +162,7 @@ public class Ex2 implements Runnable{
         return pokemonTable;
     }
 
-    private static List<CL_Pokemon> updatePoke(game_service game) {
+    public static List<CL_Pokemon> updatePoke(game_service game) {
         dw_graph_algorithms startGraph = loadGraph(game);
         List <CL_Pokemon> pokemonList = Arena.json2Pokemons(game.getPokemons());
         Iterator<CL_Pokemon> pokemonIt = pokemonList.iterator();
