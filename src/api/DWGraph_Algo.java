@@ -22,7 +22,12 @@ public class DWGraph_Algo implements dw_graph_algorithms{
     public directed_weighted_graph getGraph() {
         return this.dwga;
     }
-
+    /**
+     * This method create a deep copy of the given graph by creating new graph
+     * run over the "old" graph and add all his nodes and edges the the new graph
+     * copy the edge count and mode count as well
+     * @return directed_weighted_graph - Deep copied graph
+     */
     @Override
     public directed_weighted_graph copy() {
         node_data tempNode=null;
@@ -46,7 +51,15 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         }
         return null;
     }
-
+    /**
+     * This method starts at the first node in the graph, changes his tag to 0 than move all over his neighbors
+     * and changes their tags to 0 and so on till the last node in the graph.
+     * Cheking all the nodes tag in the graph If one of them !=0 return false.
+     * Then the method resets all the nodes tag and turns all the edges in the graph using redirect function.
+     * and run again from the same node, changing all his neighbors tag to 0 and so on.
+     * The method Checks all the nodes tag in the graph If one of them !=0 return false else return true.
+     * @return True iff there is a valid path from every node to each other node in the graph else false.
+     */
     @Override
     public boolean isConnected() {
         if (this.dwga.nodeSize() <= 1)
@@ -105,14 +118,24 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         }
         return true;
         }
-
+    /**
+     * This method run over all the nodes connected between from src to dest (-->) and all their neighbors
+     * and changing the tags of the nodes according to this calculation:
+     * my tag = my neighbor's smallest tag+the edge between me and my neighbor.
+     * The calculation using PriorityQueue to find the lowest weight neighbor.
+     * returns the shortest path consider edge's weight
+     * If there is no valid path return -1;
+     * @param src - start node
+     * @param dest - end (target) node
+     * @return double-the shortest path between src to dest
+     */
     @Override
     public double shortestPathDist(int src, int dest) {
         node_data temp = null;
         double tempWeight=0;
         if(src==dest)
             return 0;
-        PriorityQueue<node_data> q = new PriorityQueue<node_data>();
+        PriorityQueue<node_data> q = new PriorityQueue<>();
         q.add(this.dwga.getNode(src));
         dwga.getNode(src).setWeight(0);
         while (!q.isEmpty()) {
@@ -142,7 +165,14 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         resInfo(dwga);
         return -1;
     }
-
+    /**
+     * This method using the same algo as shortestPathDist to determine the nodes tags.
+     * Run over the shortestPath from dest to src (-->) according to this calculation:
+     * searching for my neighbor who has the tag of mine-the edge between us
+     * @param src - start node
+     * @param dest - end (target) node
+     * @return List<ex1.src.node_info> of the shortest patch nodes
+     */
     @Override
     public List<node_data> shortestPath(int src, int dest) {
         List<node_data> l = new ArrayList<node_data>();
@@ -189,6 +219,11 @@ public class DWGraph_Algo implements dw_graph_algorithms{
             return l;
         }
 
+    /**
+     *
+     * @param src
+     * @param l
+     */
     private void listMakerSrc(node_data src ,List<node_data> l) {
         node_data temp=null;
         Iterator <edge_data> ni = dwga.getE(src.getKey()).iterator();
@@ -202,7 +237,13 @@ public class DWGraph_Algo implements dw_graph_algorithms{
             }
         }
     }
-
+    /**
+     * This method save the directed weighted graph to a file with the given name
+     * The graph saved in specific JSON format
+     * return true if the save succeed else false
+     * @param file - the file name (may include a relative path).
+     * @return True if the save succeed, else false
+     */
     @Override
     public boolean save(String file) {
         Gson gson=new GsonBuilder().create();
@@ -248,7 +289,13 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         }
         return true;
     }
-
+    /**
+     * This method load from given file weighted graph
+     * return true if the load succeed else false
+     * Note: I was helped by https://www.geeksforgeeks.org/serialization-in-java/
+     * @param file - file name
+     * @return
+     */
     @Override
     public boolean load(String file) {
         //deserialize
@@ -267,7 +314,10 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         }
         return true;
     }
-
+    /**
+     * This method run over all the nodes in the given graph
+     * resets all the node date including tag,info and weight.
+     */
     private void resInfo(directed_weighted_graph dwga){
         Iterator <node_data> it = dwga.getV().iterator();
         node_data temp =null;
@@ -278,7 +328,11 @@ public class DWGraph_Algo implements dw_graph_algorithms{
             temp.setWeight(Double.MAX_VALUE);
         }
     }
-
+    /**
+     * This method create a new copy of the given graph but reversed
+     * mean all the edges are reversed.
+     *@return reversed copy of directed_weighted_graph
+     */
     private directed_weighted_graph redirect(directed_weighted_graph dwga){
         node_data tempNode=null;
         edge_data tempEdge=null;
@@ -313,16 +367,24 @@ public class DWGraph_Algo implements dw_graph_algorithms{
 //        g.addNode(b);
 //        g.addNode(c);
 //        g.addNode(d);
-////        g.addNode(e);
-////        g.addNode(f);
+//        g.addNode(e);
+//        g.addNode(f);
+//
+//
 //        g.connect(a.getKey(),b.getKey(),2);
 //        g.connect(a.getKey(),c.getKey(),4);
 //        g.connect(b.getKey(),d.getKey(),6);
 //        g.connect(c.getKey(),b.getKey(),1);
 //        g.connect(d.getKey(),b.getKey(),9);
-//        //g.connect(d.getKey(),a.getKey(),12);
-//        //g.connect(b.getKey(),a.getKey(),1);
+//        g.connect(d.getKey(),a.getKey(),12);
+//        g.connect(b.getKey(),a.getKey(),1);
 //        dw_graph_algorithms wga=new DWGraph_Algo();
+//        System.out.println(g.getNode(0));
+//        System.out.println(g.getNode(1));
+//        System.out.println(g.removeNode(0));
+//        System.out.println(g.getNode(0));
+//        System.out.println("a");
+//
 //        wga.init(g);
 //        directed_weighted_graph copy=new DWGraph_DS();
 //        System.out.println(wga.isConnected());
@@ -331,7 +393,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
 //        System.out.println(wga.save("wga.json"));
 //        directed_weighted_graph g1 = new DWGraph_DS();
 //        dw_graph_algorithms gaga =new DWGraph_Algo();
-//        gaga.load("A0");
+//        gaga.load("Data/A0");
 //        gaga.save("wga1.json");
 //        System.out.println(wga.load("wga.json"));
 //    }

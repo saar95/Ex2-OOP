@@ -1,6 +1,4 @@
 package api;
-import com.google.gson.annotations.SerializedName;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -106,16 +104,17 @@ public class DWGraph_DS implements directed_weighted_graph {
         if(!this.nodes.containsKey(key))
             return null;
         node_data temp=getNode(key);
-        Iterator<Integer> it=this.map.get(key).keySet().iterator();
+        Iterator<Integer> it = this.map.get(key).keySet().iterator();
         while (it.hasNext())
         {
-            map.get(key).remove(it.next());
-            edgeCount--;
-            modeCount++;
+            int tempIt = it.next();
+            this.map.get(tempIt).remove(key);
+            this.edgeCount--;
+            this.modeCount++;
         }
         this.map.remove(key);
         this.nodes.remove(key);
-        modeCount++;
+        this.modeCount++;
         return temp;
     }
 

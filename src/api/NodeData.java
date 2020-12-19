@@ -1,6 +1,6 @@
 package api;
-
-public class NodeData implements node_data{
+import org.jetbrains.annotations.NotNull;
+public class NodeData implements node_data,Comparable<node_data>{
     private int key;
     private double weight;
     private String info;
@@ -61,4 +61,11 @@ public class NodeData implements node_data{
     this.tag=t;
     }
 
+    @Override
+    public int compareTo(@NotNull node_data o) {
+        if (this.getWeight() < o.getWeight()) return -1;
+        else if (this.getWeight() > o.getWeight()) return 1;
+        return 0;
+    }
 }
+
