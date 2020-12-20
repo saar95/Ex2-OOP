@@ -77,20 +77,18 @@ import java.awt.event.ActionListener;
             boolean flag =true;
             String textID=jTextID.getText();
             Long id = Long.valueOf(textID.length());
-            this.gameId =Long.parseLong(String.valueOf(textID.length()));
+            this.gameId =Long.parseLong(String.valueOf(textID));
             if (id!=9) {
                 flag=false;
                 wrongID.setText("Wrong ID,please try again");
             }
             String textLevel=jTextLevel.getText();
             Integer level=Integer.parseInt(textLevel);
-            if (level<0 || level>23) {
-                flag=false;
-                wrongLevel.setText("This level isn't exist,please choose between [0-23]");
-            }
             if (flag==true) {
                 success.setText("Successful login,lets start!");
                 this.gameLevel=Integer.parseInt(textLevel);
+                ex2.setId(getId());
+                ex2.setLevel(getLevel());
                 setVisible(false);
                 Thread client = new Thread(ex2);
                 client.start();

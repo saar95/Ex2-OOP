@@ -1,9 +1,6 @@
 package gameClient;
 
-import api.directed_weighted_graph;
-import api.edge_data;
-import api.geo_location;
-import api.node_data;
+import api.*;
 import gameClient.util.Range;
 import gameClient.util.Range2D;
 
@@ -16,20 +13,19 @@ import java.util.List;
 public class MyPanel extends JPanel {
     private Arena _ar;
     private gameClient.util.Range2Range _w2f;
+    private game_service game;
 
-    public MyPanel(Arena _ar){
+    public MyPanel(Arena _ar,game_service game){
         super();
         this._ar = _ar;
+        this.game=game;
     }
     private void updateFrame() {
-
         Range rx = new Range(20,this.getWidth()-20);
         Range ry = new Range(this.getHeight()-20,20);
         Range2D frame = new Range2D(rx,ry);
         directed_weighted_graph g = _ar.getGraph();
         _w2f = Arena.w2f(g,frame);
-        
-
     }
 
     @Override
@@ -40,7 +36,7 @@ public class MyPanel extends JPanel {
         drawNodes(g);
         drawPokemons(g);
         drawAgants(g);
-        //drawTime(g);
+        drawTime(g);
 
     }
     private void drawPokemons(Graphics g){
@@ -113,55 +109,14 @@ public class MyPanel extends JPanel {
             g.drawString(""+n.getKey(), (int)fp.x(), (int)fp.y()-2*r);
         }
         
-      //  private void drawTime(Graphics g){
+        private void drawTime(Graphics g) {
+        String min=String.valueOf(game.timeToEnd()/100000);
+        String sec=String.valueOf(game.timeToEnd()/1000);
+        g.setColor(Color.black);
+        g.drawString(min+":"+sec,20,20);
 
-        //Jlabel jl=new Jlabel();
-
-//            JLabel jl=new JLabel("IP:");
-//            jl.setBounds(32,50,100,20);
-//            //jl.setText("IP:");
-//            JTextField jt = new JTextField();
-//            jl.setBounds(50,50,100,20);
-//            JButton jb=new JButton("Start");
-//            jb.addActionListener(this);
-//            setSize(Toolkit.getDefaultToolkit().getScreenSize());
-//            setLayout(null);
-
+         }
         }
-
-//    private static class Jlabel extends JFrame implements ActionListener {
-//        JTextField jText;
-//        JLabel label;
-//        JButton jButton;
-//
-//        public Jlabel(){
-//            label=new JLabel();
-//            label.setBounds(50,50,100,20);
-//            label.setText("IP");
-//            jText=new JTextField();
-//            jText.setBounds(50,50,100,20);
-//            jButton=new JButton("Start");
-//            jButton.addActionListener(this);
-//
-//            this.add(label);
-//            this.add(jText);
-//            this.add(jButton);
-//
-//            setSize(Toolkit.getDefaultToolkit().getScreenSize());
-//            setLayout(null);
-//            setVisible(true);
-//        }
-//
-//
-//        @Override
-//        public void actionPerformed(ActionEvent e) {
-//
-//        }
-//    }
-
-//    public static void main(String[] args) {
-//        new Jlabel();
-//    }
 
 
 

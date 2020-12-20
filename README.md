@@ -21,7 +21,8 @@ There are 2 parts to the task:
  the game will start with the given level. 
 
 There are 2 options for running this game:
-1.Use the command prompt and write the command line "java Ex2" and
- enter your ID and the number of level (need to press space between them).
-2.By pressing play in main Ex2, you will be request to enter your ID and the number of level you want to play
-  and then press the button "start".
+1.Use the command prompt and write the command line "java -jar Ex2.jar ID LEVEL" and
+enter your ID and the number of level (need to press space between them).
+2.Use the command promp and write the command line "java -jar Ex2.jar" .
+You will be request to enter your ID and the number of level you want to play
+and then press the button "start".

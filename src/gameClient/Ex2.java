@@ -19,16 +19,22 @@ public class Ex2 implements Runnable{
     private static long id;
     private static int level;
     private static Jlabel jl;
-    public static void main(String[] a) {
+    public static void main(String[] args) throws InterruptedException {
         Ex2 ex2=new Ex2();
-        if (a.length==0)
+        if (args.length > 0) {
+            if(args[0].length()!=9)
+                System.out.println("Please insert valid ID");
+            else {
+                ex2.setId(Long.parseLong(args[0]));
+                ex2.setLevel(Integer.parseInt(args[1]));
+                Thread client = new Thread(ex2);
+                client.start();
+            }
+        }
+        if (args.length==0)
         {
             jl=new Jlabel(ex2);
             jl.setVisible(true);
-        }
-        else {
-            jl.setId(Long.parseLong(a[0]));
-            jl.setLevel(Integer.parseInt(a[1]));
         }
     }
     public long getID(){
@@ -40,14 +46,14 @@ public class Ex2 implements Runnable{
     public void setLevel(int level){
         this.level=level;
     }
-    public void setId(int id){
+    public void setId(Long id){
         this.id=id;
     }
 
     @Override
     public void run() {
-        game_service game = Game_Server_Ex2.getServer(jl.getLevel()); // you have [0,23] games
-        game.login(jl.getId());
+        game_service game = Game_Server_Ex2.getServer(getLevel()); // you have [0,23] games
+        game.login(getID());
         String g = game.getGraph();
         String pks = game.getPokemons();
         directed_weighted_graph gg = loadGraph(game).getGraph();
@@ -74,11 +80,13 @@ public class Ex2 implements Runnable{
     }
     /**
      * Moves each of the agents along the edge,
-     * in case the agent is on a node the next destination (next edge) is chosen (randomly).
+     * in case the agent is on a node the next destination (next edge) is chosen by finding the nearest
+     * pokemon who doesn't have an agent .
      * @param game
      * @param gg
      * @param
      */
+
     private static void moveAgants(game_service game, directed_weighted_graph gg) {
         String lg = game.move();
         List<CL_Agent> agentList = Arena.getAgents(lg, gg);
@@ -115,7 +123,7 @@ public class Ex2 implements Runnable{
         game.move();
     }
 
-    public static dw_graph_algorithms loadGraph(game_service game){
+    private static dw_graph_algorithms loadGraph(game_service game){
         dw_graph_algorithms startGraph = new DWGraph_Algo();
         try {
             FileWriter myWriter = new FileWriter("gameGraph.txt");
@@ -127,7 +135,16 @@ public class Ex2 implements Runnable{
         startGraph.load("gameGraph.txt");
         return startGraph;
     }
-    public static HashMap<CL_Agent, HashMap<CL_Pokemon,List<node_data>>> matchPokemonsToAgents(game_service game){
+    /**
+     * build a HashMap for the agents, for each agent there is a pokemon
+     * and a list that represents the path of nodes from where the agent located to where his pokemon
+     * located by target the pokemons and send an agent to them by calculating the shortest distance
+     * from the pokemon to the agents.
+     * @param game
+     * @return a HashMap
+     */
+
+    private static HashMap<CL_Agent, HashMap<CL_Pokemon,List<node_data>>> matchPokemonsToAgents(game_service game){
         dw_graph_algorithms startGraph = loadGraph(game);
         List <CL_Pokemon> pokemonList = updatePoke(game);
         HashMap<CL_Agent,HashMap<CL_Pokemon,List<node_data>>> pokemonTable = new HashMap<>();
@@ -162,7 +179,7 @@ public class Ex2 implements Runnable{
         return pokemonTable;
     }
 
-    public static List<CL_Pokemon> updatePoke(game_service game) {
+    private static List<CL_Pokemon> updatePoke(game_service game) {
         dw_graph_algorithms startGraph = loadGraph(game);
         List <CL_Pokemon> pokemonList = Arena.json2Pokemons(game.getPokemons());
         Iterator<CL_Pokemon> pokemonIt = pokemonList.iterator();
@@ -182,13 +199,11 @@ public class Ex2 implements Runnable{
         _ar.setPokemons(Arena.json2Pokemons(fs));
         _win = new MyJFrame("test Ex2",_ar);
         _win.setSize(1024, 768);
-        MyPanel panel=new MyPanel(_ar);
+        MyPanel panel=new MyPanel(_ar,game);
         _win.add(panel);
         _win.show();
         _win.setTitle("Gonna cathem all" + game.toString());
         _win.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-
         String info = game.toString();
         JSONObject line;
         try {
