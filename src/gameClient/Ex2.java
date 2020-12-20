@@ -19,6 +19,8 @@ public class Ex2 implements Runnable{
     private static long id;
     private static int level;
     private static Jlabel jl;
+
+
     public static void main(String[] args) throws InterruptedException {
         Ex2 ex2=new Ex2();
         if (args.length > 0) {
@@ -52,30 +54,32 @@ public class Ex2 implements Runnable{
 
     @Override
     public void run() {
-        game_service game = Game_Server_Ex2.getServer(getLevel()); // you have [0,23] games
-        game.login(getID());
-        String g = game.getGraph();
-        String pks = game.getPokemons();
-        directed_weighted_graph gg = loadGraph(game).getGraph();
-        init(game);
-        List <CL_Pokemon> l = updatePoke(game);
-        game.startGame();
-        int ind=0;
-        long dt=100;
-        while(game.isRunning()) {
-            moveAgants(game, gg);
-            try {
-                if(ind%1==0) {_win.repaint();}
-                Thread.sleep(dt);
-                ind++;
+            game_service game = Game_Server_Ex2.getServer(getLevel()); // you have [0,23] games
+            game.login(getID());
+            String g = game.getGraph();
+            String pks = game.getPokemons();
+            directed_weighted_graph gg = loadGraph(game).getGraph();
+            init(game);
+            List<CL_Pokemon> l = updatePoke(game);
+            game.startGame();
+            int ind = 0;
+            long dt = 100;
+            while (game.isRunning()) {
+                moveAgants(game, gg);
+                try {
+                    if (ind % 1 == 0) {
+                        _win.repaint();
+                    }
+                    Thread.sleep(dt);
+                    ind++;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-            catch(Exception e) {
-                e.printStackTrace();
-            }
-        }
-        String res = game.toString();
+            String res = game.toString();
 
-        System.out.println(res);
+            System.out.println(res);
+
         System.exit(0);
     }
     /**
