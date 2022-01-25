@@ -19,6 +19,8 @@ There are 2 parts to the task:
  -MyPannel: this class screens the game and turns it off as soon as the time runs out.
  -Jlabel: the opening screen of the game. After entering the right ID and level, 
  the game will start with the given level. 
+ 
+ for more information visit the [wiki](https://github.com/saar95/Pokemon-Game/wiki)
 
 There are 2 options for running this game:
 1.Use the command prompt and write the command line "java -jar Ex2.jar ID LEVEL" and
